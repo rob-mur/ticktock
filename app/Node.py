@@ -59,6 +59,6 @@ class Node():
         return area(self.bounding_box) - self.dead_area
 
     def score(self):
-        area_of_children = sum([area(node.bounding_box) for node in self.children])
+        area_of_children = sum([node.area() for node in self.children])
         score_of_children = sum([node.score() for node in self.children])
         return (self.level % 12 + 1) * (self.area() - area_of_children) + score_of_children
