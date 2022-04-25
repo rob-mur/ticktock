@@ -3,7 +3,7 @@ from unittest import TestCase
 import numpy as np
 
 import app.SequenceC
-from app.Node import Node
+from app.Node import Node, area
 from app.SequenceC import C_t
 
 GRID_SIZE = 100
@@ -20,11 +20,14 @@ class Test(TestCase):
     def test_c_3(self):
         self.assertEqual(27007488494046951, C_t(3))
 
+    def test_c_4(self):
+        self.assertEqual(27007488494046951, C_t(4))
+
     def test_c_10(self):
         self.assertEqual(21808930308198471, C_t(10))
 
-    def test_c_100(self):
-        self.assertEqual(16190667393984172, C_t(100))
+#    def test_c_100(self):
+ #       self.assertEqual(16190667393984172, C_t(100))
 
     def test_c_independent(self):
         tree = Node(-1, np.array([0, GRID_SIZE - 1, 0, GRID_SIZE - 1], dtype=np.int64))
@@ -84,17 +87,17 @@ class Test(TestCase):
         tree.add_child(np.array([0,2,0,0]))
         self.assertEqual(12 * (GRID_SIZE * GRID_SIZE - 4) + 1 + 2*3, tree.score())
 
-    def test_proper_overlap(self):
-        tree = Node(-1, np.array([0, GRID_SIZE - 1, 0, GRID_SIZE - 1], dtype=np.int64))
-        tree.add_child(np.array([2, 3, 3, 7]))
-        tree.add_child(np.array([0, 4, 0, 4]))
-        self.assertEqual(12 * (GRID_SIZE * GRID_SIZE - 31) + 27 + 8, tree.score())
-
     def test_problem_square(self):
         tree = Node(-1, np.array([0, app.SequenceC.GRID_SIZE - 1, 0, app.SequenceC.GRID_SIZE - 1], dtype=np.int64))
         tree.add_child(np.array([ 3034546, 17939732, 22608053, 23794117], dtype=np.int64))
         tree.add_child(np.array([ 10474246, 25904962, 18236822, 38959070], dtype=np.int64))
         self.assertEqual(12 * (app.SequenceC.GRID_SIZE * app.SequenceC.GRID_SIZE - 328583127703033) + 337437680541688, tree.score())
+
+    def test_proper_overlap(self):
+        tree = Node(-1, np.array([0, GRID_SIZE - 1, 0, GRID_SIZE - 1], dtype=np.int64))
+        tree.add_child(np.array([2, 3, 3, 7]))
+        tree.add_child(np.array([0, 4, 0, 4]))
+        self.assertEqual(12 * (GRID_SIZE * GRID_SIZE - 31) + 27 + 8, tree.score())
 
     def test_triple_layer_intersect(self):
         tree = Node(-1, np.array([0, GRID_SIZE - 1, 0, GRID_SIZE - 1], dtype=np.int64))
@@ -102,3 +105,11 @@ class Test(TestCase):
         tree.add_child(np.array([0, 1, 0, 0]))
         tree.add_child(np.array([0, 2, 0, 0]))
         self.assertEqual(12 * (GRID_SIZE * GRID_SIZE - 3) + 3 + 2 + 1, tree.score())
+
+    def test_concentric(self):
+        tree = Node(-1, np.array([0, GRID_SIZE - 1, 0, GRID_SIZE - 1], dtype=np.int64))
+        tree.add_child(np.array([1, 2, 0, 1]))
+        tree.add_child(np.array([0, 1, 0, 2]))
+        tree.add_child(np.array([0, 2, 0, 1]))
+        self.assertEqual(12 * (GRID_SIZE * GRID_SIZE - 8) + 6+ 8 + 2, tree.score())
+
