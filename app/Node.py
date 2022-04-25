@@ -9,30 +9,28 @@ class Node():
         self.children = []
         self.level = level
         self.bounding_box = bounding_box
-        self.dead_area = 0
 
-    def add_child(self, bounding_box):
-        dead_area = 0
+    def add_child(self, node):
+        if len([x for x in self.children if (x.bounding_box == node.bounding_box).all()]) != 0:
+            return
         to_remove = []
-        new_node = Node(self.level + 1, bounding_box)
         for child in self.children:
-            if child.is_contained_by(bounding_box):
-                new_node.level = child.level
-                child.increment_level()
-                new_node.children.append(child)
+            if child.is_contained_by(node.bounding_box):
+                if child.level == node.level:
+                    child.increment_level()
+                node.children.append(child)
                 to_remove.append(child)
                 continue
-            if child.contains(bounding_box):
-                child.add_child(bounding_box)
+            if child.contains(node.bounding_box):
+                child.add_child(node)
                 return
-            if child.overlaps(bounding_box):
-                overlap = child.overlap(bounding_box)
+            if child.overlaps(node.bounding_box):
+                overlap = Node(child.level + 1, child.overlap(node.bounding_box))
                 child.add_child(overlap)
-                dead_area += area(overlap)
-        new_node.dead_area = dead_area
-        self.children.append(new_node)
-        for node in to_remove:
-            self.children.remove(node)
+                node.add_child(overlap)
+        self.children.append(node)
+        for dead_node in to_remove:
+            self.children.remove(dead_node)
 
     def overlaps(self, bounding_box):
         return (self.bounding_box[0] <= bounding_box[1]) and (self.bounding_box[1] >= bounding_box[0]) and (self.bounding_box[2] <= bounding_box[3]) and (self.bounding_box[3] >= bounding_box[2])
@@ -55,10 +53,13 @@ class Node():
     def is_contained_by(self, bounding_box):
         return not((self.bounding_box == bounding_box ).all()) and (self.bounding_box[0] >= bounding_box[0]) and (self.bounding_box[1] <= bounding_box[1]) and (self.bounding_box[2] >= bounding_box[2]) and (self.bounding_box[3] <= bounding_box[3])
 
-    def area(self):
-        return area(self.bounding_box) - self.dead_area
+    def node_area(self):
+        return area(self.bounding_box) - sum([child.tree_area() for child in self.children])
+
+    def tree_area(self):
+        return sum([child.node_area() for child in self.children])
 
     def score(self):
-        area_of_children = sum([node.area() for node in self.children])
+        area_of_children = sum([node.node_area() for node in self.children])
         score_of_children = sum([node.score() for node in self.children])
-        return (self.level % 12 + 1) * (self.area() - area_of_children) + score_of_children
+        return (self.level % 12 + 1) * (self.node_area() - area_of_children) + score_of_children

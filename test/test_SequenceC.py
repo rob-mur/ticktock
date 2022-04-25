@@ -102,3 +102,10 @@ class Test(TestCase):
         tree.add_child(np.array([0, 1, 0, 0]))
         tree.add_child(np.array([0, 2, 0, 0]))
         self.assertEqual(12 * (GRID_SIZE * GRID_SIZE - 3) + 3 + 2 + 1, tree.score())
+
+    def test_slug(self):
+        tree = Node(-1, np.array([0, GRID_SIZE - 1, 0, GRID_SIZE - 1], dtype=np.int64))
+        tree.add_child(Node(0, np.array([1, 2, 0, 1])))
+        tree.add_child(Node(0, np.array([0, 1, 0, 2])))
+        tree.add_child(Node(0, np.array([0, 2, 0, 1])))
+        self.assertEqual(12 * (GRID_SIZE * GRID_SIZE - 8) + 16, tree.score())
