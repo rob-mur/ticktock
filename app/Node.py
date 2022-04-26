@@ -11,8 +11,6 @@ class Node():
         self.bounding_box = bounding_box
 
     def add_child(self, node):
-        if len([x for x in self.children if (x.bounding_box == node.bounding_box).all()]) != 0:
-            return
         to_remove = []
         for child in self.children:
             if child.is_contained_by(node.bounding_box):
@@ -26,9 +24,15 @@ class Node():
                 child.add_child(node)
                 return
             if child.overlaps(node.bounding_box):
-                overlap = Node(child.level + 1, child.overlap(node.bounding_box))
-                child.add_child(overlap)
-                node.add_child(overlap)
+                sub_nodes = set()
+                child.get_sub_nodes(sub_nodes)
+                node.get_sub_nodes(sub_nodes)
+                overlap_area = child.overlap(node.bounding_box)
+                overlap, existing = child.find_or_create(sub_nodes, overlap_area)
+                if not existing:
+                    child.add_child(overlap)
+                    node.add_child(overlap)
+
         self.children.append(node)
         for dead_node in to_remove:
             self.children.remove(dead_node)
@@ -67,6 +71,12 @@ class Node():
         for child in self.children:
             sub_nodes.add(child)
             child.get_sub_nodes(sub_nodes)
+
+    def find_or_create(self, haystack, bounding_box):
+        matches = [x for x in haystack if (x.bounding_box == bounding_box).all()]
+        if len(matches) == 0:
+            return Node(self.level + 1, bounding_box), False
+        return matches[0], True
 
     def node_score(self):
         return (self.level % 12 + 1) * self.node_area()
