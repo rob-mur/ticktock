@@ -54,12 +54,23 @@ class Node():
         return not((self.bounding_box == bounding_box ).all()) and (self.bounding_box[0] >= bounding_box[0]) and (self.bounding_box[1] <= bounding_box[1]) and (self.bounding_box[2] >= bounding_box[2]) and (self.bounding_box[3] <= bounding_box[3])
 
     def node_area(self):
-        return area(self.bounding_box) - sum([child.tree_area() for child in self.children])
+        area_of_children = self.tree_area()
+        return area(self.bounding_box) - area_of_children
 
     def tree_area(self):
-        return sum([child.node_area() for child in self.children])
+        sub_nodes = set()
+        self.get_sub_nodes(sub_nodes)
+        return sum([child.node_area() for child in sub_nodes])
+
+    def get_sub_nodes(self,sub_nodes):
+        for child in self.children:
+            sub_nodes.add(child)
+            child.get_sub_nodes(sub_nodes)
+
+    def node_score(self):
+        return (self.level % 12 + 1) * self.node_area()
 
     def score(self):
-        area_of_children = sum([node.node_area() for node in self.children])
-        score_of_children = sum([node.score() for node in self.children])
-        return (self.level % 12 + 1) * (self.node_area() - area_of_children) + score_of_children
+        sub_nodes = set()
+        self.get_sub_nodes(sub_nodes)
+        return (self.level % 12 + 1) * self.node_area() + sum([child.node_score() for child in sub_nodes])
