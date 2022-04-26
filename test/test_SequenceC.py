@@ -116,3 +116,11 @@ class Test(TestCase):
         tree.add_child(Node(0, np.array([1,1 , 0, 2])))
         tree.add_child(Node(0, np.array([0, 2, 0, 2])))
         self.assertEqual(12 * (GRID_SIZE * GRID_SIZE - 9) + 15, tree.score())
+
+    def test_cross_with_uneven_container(self):
+        tree = Node(-1, np.array([0, GRID_SIZE - 1, 0, GRID_SIZE - 1], dtype=np.int64))
+        tree.add_child(Node(0, np.array([0, 4, 2, 2])))
+        tree.add_child(Node(0, np.array([2, 2, 0, 4])))
+        tree.add_child(Node(0, np.array([1, 3, 1, 3])))
+        tree.add_child(Node(0, np.array([2, 4, 0, 4])))
+        self.assertEqual(12 * (GRID_SIZE * GRID_SIZE - 19) + 34, tree.score())
