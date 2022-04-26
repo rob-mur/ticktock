@@ -22,6 +22,7 @@ class Node():
                 to_remove.append(child)
                 continue
             if child.contains(node.bounding_box):
+                node.level += 1
                 child.add_child(node)
                 return
             if child.overlaps(node.bounding_box):
