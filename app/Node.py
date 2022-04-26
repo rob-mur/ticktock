@@ -14,8 +14,7 @@ class Node():
         to_remove = []
         for child in self.children:
             if child.is_contained_by(node.bounding_box):
-                if child.level == node.level:
-                    child.increment_level()
+                child.increment_level(node.level + 1)
                 node.children.append(child)
                 to_remove.append(child)
                 continue
@@ -40,10 +39,10 @@ class Node():
     def overlaps(self, bounding_box):
         return (self.bounding_box[0] <= bounding_box[1]) and (self.bounding_box[1] >= bounding_box[0]) and (self.bounding_box[2] <= bounding_box[3]) and (self.bounding_box[3] >= bounding_box[2])
 
-    def increment_level(self):
-        self.level += 1
+    def increment_level(self, to):
+        self.level = max(self.level, to)
         for child in self.children:
-            child.increment_level()
+            child.increment_level(to + 1)
 
     def overlap(self, bounding_box):
         x0 = max(self.bounding_box[0], bounding_box[0])

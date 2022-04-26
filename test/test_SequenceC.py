@@ -20,9 +20,6 @@ class Test(TestCase):
     def test_c_3(self):
         self.assertEqual(27007488494046951, C_t(3))
 
-    def test_c_4(self):
-        self.assertEqual(26387001815160431, C_t(4))
-
     def test_c_10(self):
         self.assertEqual(21808930308198471, C_t(10))
 
@@ -112,3 +109,10 @@ class Test(TestCase):
         tree.add_child(Node(0, np.array([0, 1, 0, 2])))
         tree.add_child(Node(0, np.array([0, 2, 0, 1])))
         self.assertEqual(12 * (GRID_SIZE * GRID_SIZE - 8) + 16, tree.score())
+
+    def test_cross(self):
+        tree = Node(-1, np.array([0, GRID_SIZE - 1, 0, GRID_SIZE - 1], dtype=np.int64))
+        tree.add_child(Node(0, np.array([0, 2, 1, 1])))
+        tree.add_child(Node(0, np.array([1,1 , 0, 2])))
+        tree.add_child(Node(0, np.array([0, 2, 0, 2])))
+        self.assertEqual(12 * (GRID_SIZE * GRID_SIZE - 9) + 15, tree.score())

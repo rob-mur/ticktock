@@ -13,8 +13,8 @@ plt.figure()
 currentAxis = plt.gca()
 plt.xlim([0,GRID_SIZE])
 plt.ylim([0,GRID_SIZE])
-s_values = np.fromiter(S_t(4), dtype=np.int32)
-for n in range(1,5):
+s_values = np.fromiter(S_t(10), dtype=np.int32)
+for n in range(1,11):
     n_values = s_values[4 * n - 4: 4 * n]
     x0 = min(n_values[0], n_values[1])
     x1 = max(n_values[0], n_values[1])
