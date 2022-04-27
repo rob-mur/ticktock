@@ -29,7 +29,7 @@ import cProfile, pstats, io
 from pstats import SortKey
 pr = cProfile.Profile()
 pr.enable()
-C_t(20)
+C_t(40)
 pr.disable()
 s = io.StringIO()
 sortby = SortKey.CUMULATIVE
