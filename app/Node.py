@@ -25,11 +25,13 @@ class Node():
             if child.overlaps(node.bounding_box):
                 sub_nodes = set()
                 child.get_sub_nodes(sub_nodes)
-                node.get_sub_nodes(sub_nodes)
                 overlap_area = child.overlap(node.bounding_box)
                 overlap, existing = child.find_or_create(sub_nodes, overlap_area)
                 if not existing:
                     child.add_child(overlap)
+                sub_nodes = set()
+                node.get_sub_nodes(sub_nodes)
+                if not node.find_or_create(sub_nodes, overlap_area)[1]:
                     node.add_child(overlap)
 
         self.children.append(node)
