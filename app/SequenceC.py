@@ -20,5 +20,4 @@ def C_t(t):
         y1 = max(n_values[2], n_values[3])
         tree.add_child(Node(0,np.array([x0, x1, y0, y1], dtype=np.int64)))
 
-    tree.build_full_tree()
     return tree.score()

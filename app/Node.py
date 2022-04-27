@@ -93,4 +93,5 @@ class Node():
         self.sub_tree()
 
     def score(self):
+        self.build_full_tree()
         return (self.level % 12 + 1) * self.node_area() + sum([child.node_score() for child in self.sub_tree()])
