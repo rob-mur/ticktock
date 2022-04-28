@@ -45,8 +45,8 @@ class Node():
         if tree:
             self._tree = tree
         elif self._tree is None:
-            self._tree = set()
-        self._tree.add(node)
+            self._tree = {}
+        self._tree[hash(node.bounding_box.data.tobytes())] = node
 
     def overlaps(self, bounding_box):
         return (self.bounding_box[0] <= bounding_box[1]) and (self.bounding_box[1] >= bounding_box[0]) and (
@@ -91,10 +91,10 @@ class Node():
         return sum([child.node_area() for child in self.sub_tree_cached()])
 
     def find_or_create(self, haystack, bounding_box):
-        matches = [x for x in haystack if (x.bounding_box == bounding_box).all()]
-        if len(matches) == 0:
+        key = hash(bounding_box.data.tobytes())
+        if not key in haystack:
             return Node(self.level + 1, bounding_box)
-        return matches[0]
+        return haystack[key]
 
     def node_score(self):
         if self._node_score == -1:
