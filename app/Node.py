@@ -102,4 +102,5 @@ class Node():
         return self._node_score
 
     def score(self):
+        print(f"Final tree length: {len(self._tree)}")
         return (self.level % 12 + 1) * self.node_area() + sum([child.node_score() for child in self.sub_tree_cached()])
