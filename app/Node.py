@@ -10,7 +10,8 @@ class Node():
         self.children = []
         self.level = level
         self.bounding_box = bounding_box
-        self.sub_nodes = set()
+        self.descendants = set()
+        self.precedents = set()
         self._node_area = -1
         self._node_score = -1
         self._sub_tree = None
@@ -21,25 +22,36 @@ class Node():
             if child.contains(node.bounding_box):
                 node.level += 1
                 child.add_child(node)
+                self.descendants.add(node)
+                node.precedents.add(self)
                 return
             if child.is_contained_by(node.bounding_box):
                 child.increment_level(node.level + 1)
                 node.children.append(child)
-                node.sub_nodes.add(child)
+                node.descendants.add(child)
+                child.precedents.add(node)
                 to_remove.append(child)
                 continue
             if child.overlaps(node.bounding_box):
                 overlap_area = child.overlap(node.bounding_box)
-                overlap, existing = child.find_or_create(child.sub_tree(), overlap_area)
+                overlap, existing = child.find_or_create(child.descendants, overlap_area)
                 if not existing:
-                    child.add_child(overlap)
-                if not node.find_or_create(node.sub_tree(), overlap_area)[1]:
-                    node.add_child(overlap)
+                    child.add_child_and_signal(overlap)
+                if not node.find_or_create(node.descendants, overlap_area)[1]:
+                    node.add_child_and_signal(overlap)
 
         self.children.append(node)
-        self.sub_nodes.add(node)
+        self.descendants.add(node)
+        node.precedents.add(self)
         for dead_node in to_remove:
             self.children.remove(dead_node)
+
+    def add_child_and_signal(self, node):
+        for parent in self.precedents:
+            parent.descendants.add(node)
+        self.add_child(node)
+
+
 
     def overlaps(self, bounding_box):
         return (self.bounding_box[0] <= bounding_box[1]) and (self.bounding_box[1] >= bounding_box[0]) and (self.bounding_box[2] <= bounding_box[3]) and (self.bounding_box[3] >= bounding_box[2])
@@ -69,7 +81,7 @@ class Node():
         return self._node_area
 
     def sub_tree(self):
-        return set.union(*[child.sub_tree() for child in self.children], self.sub_nodes)
+        return set.union(*[child.sub_tree() for child in self.children], self.descendants)
 
     def sub_tree_cached(self):
         if self._sub_tree is None:
