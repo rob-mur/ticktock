@@ -61,65 +61,48 @@ class Test(TestCase):
         sut = C(GRID_SIZE)
         result = sut.from_rectangles([0, 1, 0, 1], [0, 1, 0, 1], [1, 2, 1, 2])
         self.assertEqual(12 * (GRID_SIZE * GRID_SIZE - 7) + 3 * 2 + 3 + 3, result)
-    #
-    # def test_pokey(self):
-    #     tree = Node(-1, np.array([0, GRID_SIZE - 1, 0, GRID_SIZE - 1], dtype=np.int64))
-    #     tree.add_child(Node(0, np.array([0, 2, 0, 0])))
-    #     tree.add_child(Node(0, np.array([1, 1, 0, 1])))
-    #     self.assertEqual(12 * (GRID_SIZE * GRID_SIZE - 4) + 3 + 2, tree.score())
-    #
-    # def test_both_intersect_and_contain(self):
-    #     tree = Node(-1, np.array([0, GRID_SIZE - 1, 0, GRID_SIZE - 1], dtype=np.int64))
-    #     tree.add_child(Node(0, np.array([0, 0, 0, 0])))
-    #     tree.add_child(Node(0, np.array([1,3,0,0])))
-    #     tree.add_child(Node(0, np.array([0,2,0,0])))
-    #     self.assertEqual(12 * (GRID_SIZE * GRID_SIZE - 4) + 1 + 2*3, tree.score())
-    #
-    # def test_proper_overlap(self):
-    #     tree = Node(-1, np.array([0, GRID_SIZE - 1, 0, GRID_SIZE - 1], dtype=np.int64))
-    #     tree.add_child(Node(0, np.array([2, 3, 3, 7])))
-    #     tree.add_child(Node(0, np.array([0, 4, 0, 4])))
-    #     self.assertEqual(12 * (GRID_SIZE * GRID_SIZE - 31) + 27 + 8, tree.score())
-    #
-    # def test_problem_square(self):
-    #     tree = Node(-1, np.array([0, app.SequenceC.GRID_SIZE - 1, 0, app.SequenceC.GRID_SIZE - 1], dtype=np.int64))
-    #     tree.add_child(Node(0, np.array([ 3034546, 17939732, 22608053, 23794117], dtype=np.int64)))
-    #     tree.add_child(Node(0, np.array([ 10474246, 25904962, 18236822, 38959070], dtype=np.int64)))
-    #     self.assertEqual(12 * (app.SequenceC.GRID_SIZE * app.SequenceC.GRID_SIZE - 328583127703033) + 337437680541688, tree.score())
-    #
-    # def test_triple_layer_intersect(self):
-    #     tree = Node(-1, np.array([0, GRID_SIZE - 1, 0, GRID_SIZE - 1], dtype=np.int64))
-    #     tree.add_child(Node(0, np.array([0, 0, 0, 0])))
-    #     tree.add_child(Node(0, np.array([0, 1, 0, 0])))
-    #     tree.add_child(Node(0, np.array([0, 2, 0, 0])))
-    #     self.assertEqual(12 * (GRID_SIZE * GRID_SIZE - 3) + 3 + 2 + 1, tree.score())
-    #
-    # def test_slug(self):
-    #     tree = Node(-1, np.array([0, GRID_SIZE - 1, 0, GRID_SIZE - 1], dtype=np.int64))
-    #     tree.add_child(Node(0, np.array([1, 2, 0, 1])))
-    #     tree.add_child(Node(0, np.array([0, 1, 0, 2])))
-    #     tree.add_child(Node(0, np.array([0, 2, 0, 1])))
-    #     self.assertEqual(12 * (GRID_SIZE * GRID_SIZE - 8) + 16, tree.score())
-    #
-    # def test_cross(self):
-    #     tree = Node(-1, np.array([0, GRID_SIZE - 1, 0, GRID_SIZE - 1], dtype=np.int64))
-    #     tree.add_child(Node(0, np.array([0, 2, 1, 1])))
-    #     tree.add_child(Node(0, np.array([1,1 , 0, 2])))
-    #     tree.add_child(Node(0, np.array([0, 2, 0, 2])))
-    #     self.assertEqual(12 * (GRID_SIZE * GRID_SIZE - 9) + 15, tree.score())
-    #
-    # def test_cross_with_uneven_container(self):
-    #     tree = Node(-1, np.array([0, GRID_SIZE - 1, 0, GRID_SIZE - 1], dtype=np.int64))
-    #     tree.add_child(Node(0, np.array([0, 4, 2, 2])))
-    #     tree.add_child(Node(0, np.array([2, 2, 0, 4])))
-    #     tree.add_child(Node(0, np.array([1, 3, 1, 3])))
-    #     tree.add_child(Node(0, np.array([2, 4, 0, 4])))
-    #     self.assertEqual(12 * (GRID_SIZE * GRID_SIZE - 19) + 34, tree.score())
-    #
-    # def test_correct_sub_tree(self):
-    #     tree = Node(-1, np.array([0, GRID_SIZE - 1, 0, GRID_SIZE - 1], dtype=np.int64))
-    #     tree.add_child(Node(0, np.array([0, 1, 0, 1])))
-    #     tree.add_child(Node(0, np.array([0, 1, 1, 1])))
-    #     tree.add_child(Node(0, np.array([1, 1, 0, 1])))
-    #     tree.add_child(Node(0, np.array([1, 2, 1, 2])))
-    #     self.assertEqual(12 * (GRID_SIZE * GRID_SIZE - 7) + 12, tree.score())
+
+    def test_pokey(self):
+        sut = C(GRID_SIZE)
+        result = sut.from_rectangles([0,2,0,0],[1,1,0,1])
+        self.assertEqual(12 * (GRID_SIZE * GRID_SIZE - 4) + 3 + 2, result)
+
+    def test_both_intersect_and_contain(self):
+        sut = C(GRID_SIZE)
+        result = sut.from_rectangles([0,0,0,0],[1,3,0,0],[0,2,0,0])
+        self.assertEqual(12 * (GRID_SIZE * GRID_SIZE - 4) + 1 + 2*3, result)
+
+    def test_proper_overlap(self):
+        sut = C(GRID_SIZE)
+        result = sut.from_rectangles([2,3,3,7],[0,4,0,4])
+        self.assertEqual(12 * (GRID_SIZE * GRID_SIZE - 31) + 27 + 8, result)
+
+    def test_problem_square(self):
+        sut = C()
+        result = sut.from_rectangles([ 3034546, 17939732, 22608053, 23794117],[ 10474246, 25904962, 18236822, 38959070])
+        self.assertEqual(12 * (app.SequenceC.GRID_SIZE * app.SequenceC.GRID_SIZE - 328583127703033) + 337437680541688, result)
+
+    def test_triple_layer_intersect(self):
+        sut = C(GRID_SIZE)
+        result = sut.from_rectangles([0,0,0,0],[0,1,0,0],[0,2,0,0])
+        self.assertEqual(12 * (GRID_SIZE * GRID_SIZE - 3) + 3 + 2 + 1, result)
+
+    def test_slug(self):
+        sut = C(GRID_SIZE)
+        result = sut.from_rectangles([1,2,0,1],[0,1,0,2],[0,2,0,1])
+        self.assertEqual(12 * (GRID_SIZE * GRID_SIZE - 8) + 16, result)
+
+    def test_cross(self):
+        sut = C(GRID_SIZE)
+        result = sut.from_rectangles([0,2,1,1],[1,1,0,2],[0,2,0,2])
+        self.assertEqual(12 * (GRID_SIZE * GRID_SIZE - 9) + 15, result)
+
+    def test_cross_with_uneven_container(self):
+        sut = C(GRID_SIZE)
+        result = sut.from_rectangles([0,4,2,2],[2,2,0,4],[1,3,1,3],[2,4,0,4])
+        self.assertEqual(12 * (GRID_SIZE * GRID_SIZE - 19) + 34, result)
+
+    def test_correct_sub_tree(self):
+        sut = C(GRID_SIZE)
+        result = sut.from_rectangles([0,1,0,1],[0,1,1,1],[1,1,0,1],[1,2,1,2])
+        self.assertEqual(12 * (GRID_SIZE * GRID_SIZE - 7) + 12, result)
