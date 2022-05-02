@@ -27,7 +27,7 @@ def C_t(t):
     return tree.score()
 
 
-@dataclass
+@dataclass(frozen=True)
 class Rectangle:
     x0: int
     x1: int
@@ -44,6 +44,7 @@ def rectangles(t):
         n_3 = next(iter)
         yield Rectangle(min(n_0, n_1), max(n_0, n_1), min(n_2, n_3), max(n_2, n_3))
 
+
 def rectangle_from_list(*args):
     for rectangle in args:
         yield Rectangle(rectangle[0], rectangle[1], rectangle[2], rectangle[3])
@@ -51,9 +52,7 @@ def rectangle_from_list(*args):
 
 class C:
 
-    _small_delta = 0.1
-
-    def __init__(self, grid_size = GRID_SIZE):
+    def __init__(self, grid_size=GRID_SIZE):
         self._grid_size = grid_size
 
     def _analyse_rectangles(self, rectangles):
@@ -77,9 +76,9 @@ class C:
             y_values = sorted(y_values)
             for j in range(0, len(y_values) - 1):
                 overlaps = y_tree[y_values[j]:y_values[j + 1]]
-                if len(overlaps) == 0:
+                if (len(overlaps) == 0) or (len(overlaps) % 12 == 0):
                     continue
-                area = (elementary_x[i + 1]  - elementary_x[i]) * (y_values[j + 1]  - y_values[j])
+                area = (elementary_x[i + 1] - elementary_x[i]) * (y_values[j + 1] - y_values[j])
                 tot_area += area
                 score = len(overlaps) % 12 * area
                 tot_score += score
