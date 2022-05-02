@@ -70,7 +70,7 @@ class C:
 
         elementary_x = sorted(elementary_x)
 
-        score = 0
+        tot_score = 0
         tot_area = 0
         for i in range(0, len(elementary_x) - 1):
             y_tree = IntervalTree()
@@ -83,9 +83,10 @@ class C:
                 overlaps = y_tree[y_values[j]:y_values[j + 1]]
                 area = (elementary_x[i + 1]  - elementary_x[i]) * (y_values[j + 1]  - y_values[j])
                 tot_area += area
-                score += len(overlaps) % 12 * area
+                score = len(overlaps) % 12 * area
+                tot_score += score
 
-        return 12 * (self._grid_size * self._grid_size - tot_area) + score
+        return 12 * (self._grid_size * self._grid_size - tot_area) + tot_score
 
     def from_s(self, t):
         return self._analyse_rectangles(rectangles(t))

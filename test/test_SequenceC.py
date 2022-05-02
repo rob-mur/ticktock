@@ -22,7 +22,7 @@ class Test(TestCase):
         self.assertEqual(27007488494046951, C().from_s(3))
 
     def test_c_4(self):
-        self.assertEqual(23967876580415100, C().from_s(4))
+        self.assertEqual(23967876580415111, C().from_s(4))
 
     def test_c_10(self):
         self.assertEqual(21808930308198471, C().from_s(10))
