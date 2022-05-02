@@ -13,31 +13,30 @@ GRID_SIZE = 100
 class Test(TestCase):
 
     def test_c_1(self):
-        self.assertEqual(30613048345941659, C(1).score())
+        self.assertEqual(30613048345941659, C().from_s(1))
 
     def test_c_2(self):
-        self.assertEqual(30418584619130954, C(2).score())
+        self.assertEqual(30418584619130954, C().from_s(2))
 
     def test_c_3(self):
-        self.assertEqual(27007488494046951, C(3).score())
-    #
-    # def test_c_10(self):
-    #     self.assertEqual(21808930308198471, app.C(10).score())
-    #
+        self.assertEqual(27007488494046951, C().from_s(3))
+
+    def test_c_10(self):
+        self.assertEqual(21808930308198471, C().from_s(10))
+
     # def test_c_100(self):
     #    self.assertEqual(16190667393984172,app.C(100).score())
     #
-    # def test_c_independent(self):
-    #     tree = Node(-1, np.array([0, GRID_SIZE - 1, 0, GRID_SIZE - 1], dtype=np.int64))
-    #     tree.add_child(Node(0, np.array([0, 1, 0, 1])))
-    #     tree.add_child(Node(0, np.array([2, 3, 2, 3])))
-    #     self.assertEqual(12 * (GRID_SIZE * GRID_SIZE - 8) + 8, tree.score())
-    #
-    # def test_c_contained(self):
-    #     tree = Node(-1, np.array([0, GRID_SIZE - 1, 0, GRID_SIZE - 1], dtype=np.int64))
-    #     tree.add_child(Node(0, np.array([0, 2, 0, 2])))
-    #     tree.add_child(Node(0, np.array([0, 1, 0, 1])))
-    #     self.assertEqual(12 * (GRID_SIZE * GRID_SIZE - 9) + (9 - 4) + 4 * 2, tree.score())
+    def test_c_independent(self):
+        sut = C(GRID_SIZE)
+        result = sut.from_rectangles([0,1,0,1], [2,3,2,3])
+        self.assertEqual(12 * (GRID_SIZE * GRID_SIZE - 8) + 8, result)
+
+    def test_c_contained(self):
+        sut = C(GRID_SIZE)
+        result = sut.from_rectangles([0, 2, 0, 2], [0, 1, 0, 1])
+        self.assertEqual(12 * (GRID_SIZE * GRID_SIZE - 9) + (9 - 4) + 4 * 2, result)
+
     #
     # def test_c_intersect(self):
     #     tree = Node(-1, np.array([0, GRID_SIZE - 1, 0, GRID_SIZE - 1], dtype=np.int64))

@@ -44,15 +44,25 @@ def rectangles(t):
         n_3 = next(iter)
         yield Rectangle(min(n_0, n_1), max(n_0, n_1), min(n_2, n_3), max(n_2, n_3))
 
+def rectangle_from_list(*args):
+    for rectangle in args:
+        yield Rectangle(rectangle[0], rectangle[1], rectangle[2], rectangle[3])
+
 
 class C:
-    def __init__(self, t):
+
+    _small_delta = 0.1
+
+    def __init__(self, grid_size = GRID_SIZE):
+        self._grid_size = grid_size
+
+    def _analyse_rectangles(self, rectangles):
         x_tree = IntervalTree()
         elementary_x = set()
-        for rect in rectangles(t):
+        for rect in rectangles:
             print(rect)
-            if not Interval(rect.x0, rect.x1) in x_tree:
-                x_tree[rect.x0: rect.x1] = [rect.y0, rect.y1 + 1]
+            if not Interval(rect.x0, rect.x1 + 1) in x_tree:
+                x_tree[rect.x0: rect.x1 + 1] = [rect.y0, rect.y1 + 1]
             else:
                 print("untested case happened")
 
@@ -66,18 +76,20 @@ class C:
             y_tree = IntervalTree()
             y_values = set()
             for interval in x_tree[elementary_x[i]:elementary_x[i + 1]]:
-                y_tree.add(Interval(interval.data[0],interval.data[1]))
-                y_values.update([interval.data[0],interval.data[1]])
+                y_tree.add(Interval(interval.data[0], interval.data[1]))
+                y_values.update([interval.data[0], interval.data[1]])
             y_values = sorted(y_values)
             for j in range(0, len(y_values) - 1):
-                overlaps = y_tree[y_values[j]:y_values[j+1]]
-                area = (elementary_x[i + 1] - elementary_x[i]) * (y_values[j+1] - y_values[j])
+                overlaps = y_tree[y_values[j]:y_values[j + 1]]
+                area = (elementary_x[i + 1]  - elementary_x[i]) * (y_values[j + 1]  - y_values[j])
                 tot_area += area
                 score += len(overlaps) % 12 * area
 
-        score = 12 * (GRID_SIZE * GRID_SIZE - tot_area) + score
+        return 12 * (self._grid_size * self._grid_size - tot_area) + score
 
-        self.result = score
+    def from_s(self, t):
+        return self._analyse_rectangles(rectangles(t))
 
-    def score(self):
-        return self.result
+    def from_rectangles(self, *args):
+        generator = rectangle_from_list(*args)
+        return self._analyse_rectangles(generator)
