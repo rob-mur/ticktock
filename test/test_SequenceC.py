@@ -24,6 +24,9 @@ class Test(TestCase):
     def test_c_4(self):
         self.assertEqual(23967876580415111, C().from_s(4))
 
+    def test_c_5(self):
+        self.assertEqual(23907860947213301, C().from_s(5))
+
     def test_c_10(self):
         self.assertEqual(21808930308198471, C().from_s(10))
 

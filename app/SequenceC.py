@@ -60,11 +60,7 @@ class C:
         x_tree = IntervalTree()
         elementary_x = set()
         for i, rect in enumerate(rectangles):
-            print(rect)
-            if not Interval(rect.x0, rect.x1 + 1) in x_tree:
-                x_tree[rect.x0: rect.x1 + 1] = i, [rect.y0, rect.y1 + 1]
-            else:
-                print("untested case happened")
+            x_tree[rect.x0: rect.x1 + 1] = i, [rect.y0, rect.y1 + 1]
 
             elementary_x.update([rect.x0, rect.x1 + 1])
 
@@ -81,6 +77,8 @@ class C:
             y_values = sorted(y_values)
             for j in range(0, len(y_values) - 1):
                 overlaps = y_tree[y_values[j]:y_values[j + 1]]
+                if len(overlaps) == 0:
+                    continue
                 area = (elementary_x[i + 1]  - elementary_x[i]) * (y_values[j + 1]  - y_values[j])
                 tot_area += area
                 score = len(overlaps) % 12 * area
