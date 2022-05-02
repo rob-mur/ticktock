@@ -37,39 +37,30 @@ class Test(TestCase):
         result = sut.from_rectangles([0, 2, 0, 2], [0, 1, 0, 1])
         self.assertEqual(12 * (GRID_SIZE * GRID_SIZE - 9) + (9 - 4) + 4 * 2, result)
 
-    #
-    # def test_c_intersect(self):
-    #     tree = Node(-1, np.array([0, GRID_SIZE - 1, 0, GRID_SIZE - 1], dtype=np.int64))
-    #     tree.add_child(Node(0, np.array([0, 1, 0, 1])))
-    #     tree.add_child(Node(0, np.array([1, 2, 1, 2])))
-    #     self.assertEqual(12 * (GRID_SIZE * GRID_SIZE - 7) + (7 - 1) + 2, tree.score())
-    #
-    # def test_c_contain_other_order(self):
-    #     tree = Node(-1, np.array([0, GRID_SIZE - 1, 0, GRID_SIZE - 1], dtype=np.int64))
-    #     tree.add_child(Node(0, np.array([0, 1, 0, 1])))
-    #     tree.add_child(Node(0, np.array([0, 2, 0, 2])))
-    #     self.assertEqual(12 * (GRID_SIZE * GRID_SIZE - 9) + (9 - 4) + 4 * 2, tree.score())
-    #
-    # def test_contain_two(self):
-    #     tree = Node(-1, np.array([0, GRID_SIZE - 1, 0, GRID_SIZE - 1], dtype=np.int64))
-    #     tree.add_child(Node(0, np.array([0, 1, 0, 1])))
-    #     tree.add_child(Node(0, np.array([0, 3, 0, 3])))
-    #     tree.add_child(Node(0, np.array([2, 3, 2, 3])))
-    #     self.assertEqual(12 * (GRID_SIZE * GRID_SIZE - 16) + (16 - 8) + 8 * 2, tree.score())
-    #
-    # def test_contain_two_almost(self):
-    #     tree = Node(-1, np.array([0, GRID_SIZE - 1, 0, GRID_SIZE - 1], dtype=np.int64))
-    #     tree.add_child(Node(0, np.array([0, 1, 0, 1])))
-    #     tree.add_child(Node(0, np.array([0, 2, 0, 2])))
-    #     tree.add_child(Node(0, np.array([2, 3, 2, 3])))
-    #     self.assertEqual(12 * (GRID_SIZE * GRID_SIZE - 12) + 7 + 5 * 2, tree.score())
-    #
-    # def test_multilayer(self):
-    #     tree = Node(-1, np.array([0, GRID_SIZE - 1, 0, GRID_SIZE - 1], dtype=np.int64))
-    #     tree.add_child(Node(0, np.array([0, 1, 0, 1])))
-    #     tree.add_child(Node(0, np.array([0, 1, 0, 1])))
-    #     tree.add_child(Node(0, np.array([1, 2, 1, 2])))
-    #     self.assertEqual(12 * (GRID_SIZE * GRID_SIZE - 7) + 3 * 2 + 3 + 3, tree.score())
+    def test_c_intersect(self):
+        sut = C(GRID_SIZE)
+        result = sut.from_rectangles([0, 1, 0, 1], [1, 2, 1, 2])
+        self.assertEqual(12 * (GRID_SIZE * GRID_SIZE - 7) + (7 - 1) + 2, result)
+
+    def test_c_contain_other_order(self):
+        sut = C(GRID_SIZE)
+        result = sut.from_rectangles([0, 1, 0, 1], [0, 2, 0, 2])
+        self.assertEqual(12 * (GRID_SIZE * GRID_SIZE - 9) + (9 - 4) + 4 * 2, result)
+
+    def test_contain_two(self):
+        sut = C(GRID_SIZE)
+        result = sut.from_rectangles([0,1,0,1],[0,3,0,3],[2,3,2,3])
+        self.assertEqual(12 * (GRID_SIZE * GRID_SIZE - 16) + (16 - 8) + 8 * 2, result)
+
+    def test_contain_two_almost(self):
+        sut = C(GRID_SIZE)
+        result = sut.from_rectangles([0,1,0,1],[0,2,0,2],[2,3,2,3])
+        self.assertEqual(12 * (GRID_SIZE * GRID_SIZE - 12) + 7 + 5 * 2, result)
+
+    def test_multilayer(self):
+        sut = C(GRID_SIZE)
+        result = sut.from_rectangles([0, 1, 0, 1], [0, 1, 0, 1], [1, 2, 1, 2])
+        self.assertEqual(12 * (GRID_SIZE * GRID_SIZE - 7) + 3 * 2 + 3 + 3, result)
     #
     # def test_pokey(self):
     #     tree = Node(-1, np.array([0, GRID_SIZE - 1, 0, GRID_SIZE - 1], dtype=np.int64))
