@@ -21,12 +21,15 @@ class Test(TestCase):
     def test_c_3(self):
         self.assertEqual(27007488494046951, C().from_s(3))
 
+    def test_c_4(self):
+        self.assertEqual(23967876580415100, C().from_s(4))
+
     def test_c_10(self):
         self.assertEqual(21808930308198471, C().from_s(10))
 
-    # def test_c_100(self):
-    #    self.assertEqual(16190667393984172,app.C(100).score())
-    #
+    def test_c_100(self):
+       self.assertEqual(16190667393984172, C().from_s(100))
+
     def test_c_independent(self):
         sut = C(GRID_SIZE)
         result = sut.from_rectangles([0,1,0,1], [2,3,2,3])
