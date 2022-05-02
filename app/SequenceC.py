@@ -59,10 +59,10 @@ class C:
     def _analyse_rectangles(self, rectangles):
         x_tree = IntervalTree()
         elementary_x = set()
-        for rect in rectangles:
+        for i, rect in enumerate(rectangles):
             print(rect)
             if not Interval(rect.x0, rect.x1 + 1) in x_tree:
-                x_tree[rect.x0: rect.x1 + 1] = [rect.y0, rect.y1 + 1]
+                x_tree[rect.x0: rect.x1 + 1] = i, [rect.y0, rect.y1 + 1]
             else:
                 print("untested case happened")
 
@@ -76,8 +76,8 @@ class C:
             y_tree = IntervalTree()
             y_values = set()
             for interval in x_tree[elementary_x[i]:elementary_x[i + 1]]:
-                y_tree.add(Interval(interval.data[0], interval.data[1]))
-                y_values.update([interval.data[0], interval.data[1]])
+                y_tree.add(Interval(interval.data[1][0], interval.data[1][1], interval.data[0]))
+                y_values.update([interval.data[1][0], interval.data[1][1]])
             y_values = sorted(y_values)
             for j in range(0, len(y_values) - 1):
                 overlaps = y_tree[y_values[j]:y_values[j + 1]]
