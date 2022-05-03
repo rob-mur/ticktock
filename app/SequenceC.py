@@ -67,7 +67,7 @@ class C:
 
         tot_score = 0
         tot_area = 0
-        for i in range(0, len(elementary_x) - 1):
+        for i in tqdm(range(0, len(elementary_x) - 1)):
             y_tree = IntervalTree()
             y_values = set()
             for interval in x_tree[elementary_x[i]:elementary_x[i + 1]]:
@@ -76,7 +76,7 @@ class C:
             y_values = sorted(y_values)
             for j in range(0, len(y_values) - 1):
                 overlaps = y_tree[y_values[j]:y_values[j + 1]]
-                if (len(overlaps) == 0) or (len(overlaps) % 12 == 0):
+                if len(overlaps) % 12 == 0:
                     continue
                 area = (elementary_x[i + 1] - elementary_x[i]) * (y_values[j + 1] - y_values[j])
                 tot_area += area
