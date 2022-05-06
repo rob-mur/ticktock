@@ -75,6 +75,9 @@ class StripeData:
     score: int = 0
     area: int = 0
 
+    def __hash__(self):
+        return id(self)
+
 
 class C:
 
@@ -83,14 +86,19 @@ class C:
 
     def _analyse_rectangles(self, rectangle_iter):
         rectangles = [rectangle for rectangle in rectangle_iter]
-        #print(rectangles)
+        print("Analysing y_values")
         y_values = sorted(set([x for rect in rectangles for x in [rect.y0, rect.y1 + 1]]))
-        stripes = IntervalTree([Interval(y_values[i], y_values[i+1], StripeData()) for i in range(len(y_values) - 1)])
-        #print(stripes)
-        x_values = sorted([x for rect in rectangles for x in
+        print("Creating the squeezed rectangles")
+        squeezed_rectangles = rectangles
+        for rect in tqdm(squeezed_rectangles):
+            rect.y0 = y_values.index(rect.y0)
+            rect.y1 = y_values.index(rect.y1 + 1)
+
+        stripes = [StripeData() for _ in range(len(y_values) - 1)]
+        print("Analysing x values")
+        x_values = sorted([x for rect in squeezed_rectangles for x in
                            [RectangleBoundary(rect, rect.x0, Boundary.LEFT),
                             RectangleBoundary(rect, rect.x1 + 1, Boundary.RIGHT)]])
-        #print(x_values)
         previous_x_value = x_values[0].value
         active_rectangles = []
         active_stripes = set()
@@ -98,31 +106,32 @@ class C:
 
             area = x_value.value - previous_x_value
             for overlap in active_stripes:
-                if (overlap.data.active_count % 12) != 0:
-                    overlap.data.area += area
-                overlap.data.score += (overlap.data.active_count % 12) * area
+                if (overlap.active_count % 12) != 0:
+                    overlap.area += area
+                overlap.score += (overlap.active_count % 12) * area
 
-            overlaps = stripes[x_value.rectangle.y0: x_value.rectangle.y1 + 1]
+            overlaps = stripes[x_value.rectangle.y0: x_value.rectangle.y1]
             if x_value.type == Boundary.LEFT:
                 active_rectangles.append(x_value.rectangle)
                 active_stripes.update(overlaps)
                 for overlap in overlaps:
-                    overlap.data.active_count += 1
+                    overlap.active_count += 1
             else:
                 active_rectangles.remove(x_value.rectangle)
                 for overlap in overlaps:
-                    overlap.data.active_count -= 1
-                    if overlap.data.active_count == 0:
+                    overlap.active_count -= 1
+                    if overlap.active_count == 0:
                         active_stripes.remove(overlap)
 
             previous_x_value = x_value.value
 
         tot_area = 0
         tot_score = 0
-        for stripe in stripes:
-            height = stripe.end - stripe.begin
-            tot_area += stripe.data.area * height
-            tot_score += stripe.data.score * height
+        print("Calculating final area")
+        for i, stripe in enumerate(stripes):
+            height = y_values[i+1] - y_values[i]
+            tot_area += stripe.area * height
+            tot_score += stripe.score * height
 
         return 12 * (self._grid_size * self._grid_size - tot_area) + tot_score
 
