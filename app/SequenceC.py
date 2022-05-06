@@ -22,17 +22,36 @@ def C_t(t):
         y0 = min(n_values[2], n_values[3])
         y1 = max(n_values[2], n_values[3])
         tree.add_child(Node(0, np.array([x0, x1, y0, y1], dtype=np.int64)))
-        print(f"Did iteration {n}")
+        #print(f"Did iteration {n}")
 
     return tree.score()
 
 
-@dataclass(frozen=True)
+@dataclass
 class Rectangle:
     x0: int
     x1: int
     y0: int
     y1: int
+
+
+from enum import Enum
+
+
+class Boundary(Enum):
+    LEFT = 1
+    RIGHT = 2
+
+
+@dataclass
+class RectangleBoundary:
+    rectangle_id: int
+    value: int
+    type: Boundary
+
+    def __lt__(self, obj):
+        return self.value < obj.value or (
+                    self.value == obj.value and (self.type == Boundary.LEFT and obj.type == Boundary.RIGHT))
 
 
 def rectangles(t):
@@ -50,38 +69,57 @@ def rectangle_from_list(*args):
         yield Rectangle(rectangle[0], rectangle[1], rectangle[2], rectangle[3])
 
 
+@dataclass
+class StripeData:
+    active_count: int = 0
+    score: int = 0
+    area: int = 0
+
+
 class C:
 
     def __init__(self, grid_size=GRID_SIZE):
         self._grid_size = grid_size
 
     def _analyse_rectangles(self, rectangles):
-        x_tree = IntervalTree()
-        elementary_x = set()
-        for i, rect in enumerate(rectangles):
-            x_tree[rect.x0: rect.x1 + 1] = i, [rect.y0, rect.y1 + 1]
+        rectangles = [rectangle for rectangle in rectangles]
+        #print(rectangles)
+        y_values = sorted(set([x for rect in rectangles for x in [rect.y0, rect.y1 + 1]]))
+        stripes = IntervalTree([Interval(y_values[i], y_values[i+1], StripeData()) for i in range(len(y_values) - 1)])
+        #print(stripes)
+        x_values = sorted([x for i, rect in enumerate(rectangles) for x in
+                           [RectangleBoundary(i, rect.x0, Boundary.LEFT),
+                            RectangleBoundary(i, rect.x1 + 1, Boundary.RIGHT)]])
+        #print(x_values)
+        previous_x_value = x_values[0].value
+        active_rectangles = []
+        active_stripes = set()
+        for x_value in x_values:
 
-            elementary_x.update([rect.x0, rect.x1 + 1])
+            area = x_value.value - previous_x_value
+            for overlap in active_stripes:
+                overlap.data.area += area
+                overlap.data.score += (overlap.data.active_count % 12) * area
 
-        elementary_x = sorted(elementary_x)
+            overlaps = stripes[rectangles[x_value.rectangle_id].y0: rectangles[x_value.rectangle_id].y1 + 1]
+            if x_value.type == Boundary.LEFT:
+                active_rectangles.append(rectangles[x_value.rectangle_id])
+                active_stripes.update(overlaps)
+                for overlap in overlaps:
+                    overlap.data.active_count += 1
+            else:
+                active_rectangles.remove(rectangles[x_value.rectangle_id])
+                active_stripes = set([x for rect in active_rectangles for x in stripes[rect.y0: rect.y1 + 1]])
+                for overlap in overlaps:
+                    overlap.data.active_count -= 1
 
-        tot_score = 0
+            previous_x_value = x_value.value
+
         tot_area = 0
-        for i in tqdm(range(0, len(elementary_x) - 1)):
-            y_tree = IntervalTree()
-            y_values = set()
-            for interval in x_tree[elementary_x[i]:elementary_x[i + 1]]:
-                y_tree.add(Interval(interval.data[1][0], interval.data[1][1], interval.data[0]))
-                y_values.update([interval.data[1][0], interval.data[1][1]])
-            y_values = sorted(y_values)
-            for j in range(0, len(y_values) - 1):
-                overlaps = y_tree[y_values[j]:y_values[j + 1]]
-                if len(overlaps) % 12 == 0:
-                    continue
-                area = (elementary_x[i + 1] - elementary_x[i]) * (y_values[j + 1] - y_values[j])
-                tot_area += area
-                score = len(overlaps) % 12 * area
-                tot_score += score
+        tot_score = 0
+        for stripe in stripes:
+            tot_area += stripe.data.area * (stripe.end - stripe.begin)
+            tot_score += stripe.data.score * (stripe.end - stripe.begin)
 
         return 12 * (self._grid_size * self._grid_size - tot_area) + tot_score
 
