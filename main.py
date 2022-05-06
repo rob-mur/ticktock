@@ -31,7 +31,7 @@ from app.SequenceS import S_t
 # pr = cProfile.Profile()
 # pr.enable()
 # c = C()
-# print(c.from_s(1000))
+# print(c.from_s(500))
 # pr.disable()
 # s = io.StringIO()
 # sortby = SortKey.CUMULATIVE
